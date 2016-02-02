@@ -1,13 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/clbanning/mxj"
 	"launchpad.net/xmlpath"
 	"os"
-	"reflect"
-	"flag"
 	"path/filepath"
+	"reflect"
 )
 
 var myStack = &stack{}
@@ -72,7 +72,7 @@ func main() {
 			matched = matched[:0]
 			skipped = skipped[:0]
 			unmatched = unmatched[:0]
-			lookup_map(m)
+			lookupMap(m)
 
 			if len(unmatched) != 0 {
 				fmt.Fprintf(report, "\n...UNMATCHED...\n")
@@ -99,7 +99,7 @@ func main() {
 	fmt.Println("DONE... report.txt")
 }
 
-func lookup_map(m map[string]interface{}) {
+func lookupMap(m map[string]interface{}) {
 	for n, v := range m {
 		myStack.push(n)
 		switch v2 := v.(type) {
@@ -128,9 +128,9 @@ func lookup_map(m map[string]interface{}) {
 				skipped = append(skipped, s)
 			}
 		case map[string]interface{}:
-			lookup_map(v2)
+			lookupMap(v2)
 		case []interface{}:
-			lookup_slice(v2)
+			lookupSlice(v2)
 		default:
 			panic(reflect.TypeOf(v))
 		}
@@ -138,13 +138,13 @@ func lookup_map(m map[string]interface{}) {
 	}
 }
 
-func lookup_slice(l []interface{}) {
+func lookupSlice(l []interface{}) {
 	for _, v := range l {
 		switch v2 := v.(type) {
 		case string:
 			panic(v2)
 		case map[string]interface{}:
-			lookup_map(v2)
+			lookupMap(v2)
 		default:
 			panic(reflect.TypeOf(v))
 		}
